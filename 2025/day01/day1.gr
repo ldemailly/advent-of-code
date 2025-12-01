@@ -22,7 +22,6 @@ func readInput() {
     return res
 }
 
-
 println("Part 1:")
 input := readInput()
 // println("input:", input)
@@ -31,10 +30,31 @@ cur := 50
 res := 0
 for i:=input {
     cur = (cur + i + 100) % 100
-    println("Current position after", i, "is",cur)
+    println("1.Current position after", i, "is",cur)
     if cur == 0 {
         res++
     }
 }
+println("1.Result:", res)
 
-println("Result:", res)
+println("Part 2:")
+cur := 50
+res := 0
+for i:=input {
+    turns := abs(i/100)
+    res += turns
+    step := i % 100
+    if cur !=0 && i>0 && cur + step > 100 {
+        res++
+    }
+    if cur !=0 && i<0 && cur + step < 0 {
+        res++
+    }
+    cur = (cur + step + 100) % 100
+    if cur == 0 {
+        res++
+    }
+    println("2.Current position after", i, "is",cur, "with",res,"crossings so far")
+}
+
+println("2.Result:", res)
