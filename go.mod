@@ -1,4 +1,4 @@
-module github.com/ldemailly/advent24
+module github.com/ldemailly/advent-of-code
 
 go 1.23.3
 
