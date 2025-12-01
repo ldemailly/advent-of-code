@@ -1,0 +1,40 @@
+// Day 1 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/1
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        c := line[0:1]
+        ns := line[1:]
+        // println("Read line starting with:", c, "and numbers:", ns)
+        if c == "L" {
+            res += -int(ns)
+        } else if c == "R" {
+            res += int(ns)
+        } else {
+            error("Unknown line:" + line)
+        }
+    }
+    return res
+}
+
+
+println("Part 1:")
+input := readInput()
+// println("input:", input)
+
+cur := 50
+res := 0
+for i:=input {
+    cur = (cur + i + 100) % 100
+    println("Current position after", i, "is",cur)
+    if cur == 0 {
+        res++
+    }
+}
+
+println("Result:", res)
