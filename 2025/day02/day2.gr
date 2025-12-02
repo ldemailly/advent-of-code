@@ -32,9 +32,61 @@ for ivals := input {
     count := 0
     for i:=start:end {
         if isInvalid(i) {
-            println("  Invalid number found:", i)
+            println("  1.Invalid number found:", i)
             sum+=i
         }
     }
 }
 println("1.Result:", sum)
+
+func cutByN(str, n) {
+    res := []
+    l := len(str)
+    i := 0
+    for i < l {
+        res += str[i:i+n]
+        i += n
+    }
+    return res
+}
+
+func allEqual(arr) {
+    f := arr[0]
+    for i:= 1:len(arr) {
+        if arr[i] != f {
+            return false
+        }
+    }
+    return true
+}
+
+func part2Invalid(n) {
+    s := str(n)
+    l := len(s)
+    last := l/2+1
+    for i := 1:last {
+        if l % i != 0 {
+            // println("  2.Skipping length", i, "for number", n)
+            continue
+        }
+        // println("  2.Checking length", i, "for number", n)
+        if allEqual(cutByN(s, i)) {
+            return true
+        }
+    }
+    return false
+}
+
+
+sum := 0
+for ivals := input {
+    start := ivals[0]
+    end := ivals[1]+1
+    for i:=start:end {
+        if part2Invalid(i) {
+            println("  2.Invalid number found:", i)
+            sum+=i
+        }
+    }
+}
+println("2.Result:", sum)
