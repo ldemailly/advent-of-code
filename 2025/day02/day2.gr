@@ -1,0 +1,40 @@
+// Day 2 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/2
+
+func readInput() {
+    res := []
+    line := read() // single line
+    for i := split(line, ",") {
+        iv := split(i, "-")
+        start := int(iv[0])
+        end := int(iv[1])
+        res += [[start, end]]
+    }
+    return res
+}
+
+func isInvalid(n) {
+    s := str(n)
+    if len(s) % 2 != 0 {
+        return false
+    }
+    return s[0:len(s)/2] == s[len(s)/2:len(s)]
+}
+
+println("Part 1:")
+input := readInput()
+println("input:", input)
+
+sum := 0
+for ivals := input {
+    start := ivals[0]
+    end := ivals[1]+1
+    count := 0
+    for i:=start:end {
+        if isInvalid(i) {
+            println("  Invalid number found:", i)
+            sum+=i
+        }
+    }
+}
+println("1.Result:", sum)
