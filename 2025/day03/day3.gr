@@ -37,10 +37,29 @@ println("input:", input)
 sum := 0
 for bank := input {
     m1 := maxAt(bank[0:-1])
-    println("  Bank:", bank, "max:", m1)
+    println("  1. Bank:", bank, "max:", m1)
     m2 := max(bank[m1[1]+1:])
-    println("    second max:", m2)
+    println("     second max:", m2)
     sum += m1[0]*10 + m2
 }
 
 println("1.Result:", sum)
+
+println("Part 2:")
+sum := 0
+for bank := input {
+    keep := -11
+    prev := 0
+    n := 0
+    for keep < 0 {
+        m := maxAt(bank[prev:keep])
+        n = n*10 + m[0]
+        prev += m[1] + 1
+        keep++
+    }
+    n = n*10 + max(bank[prev:])
+    println("  2. Bank:", bank, "formed number:", n)
+    sum += n
+}
+
+println("2.Result:", sum)
