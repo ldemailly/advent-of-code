@@ -1,0 +1,167 @@
+// Day 4 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/4
+
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        row := []
+        for vs := split(line) {
+            v := 0
+            if (vs == "@") {
+                v = 1 // 1 for initial live cell
+            }
+            row += v
+        }
+        res += [row]
+    }
+    return res
+}
+
+func countNeighbors(grid, x, y) {
+    sum := 0
+    for j:= y-1:y+2 {
+        for i:= x-1:x+2 {
+            if i==x && j==y { //center
+                continue
+            }
+            if i<0 || j<0 || j>=len(grid) || i>=len(grid[0]) {
+                continue
+            }
+            if grid[j][i]==1 {
+                sum++
+            }
+        }
+    }
+    return sum
+}
+
+FULL := "█"
+TOP := "▀"
+BOTTOM := "▄"
+GREEN := "\x1b[32m"
+GREEN_BG := "\x1b[42m"
+RED := "\x1b[31m"
+RED_BG := "\x1b[41m"
+RESET := "\x1b[0m"
+
+HOME := "\x1b[H"
+CLEAR := "\x1b[2J"
+SYNC_START  := "\x1b[?2026h"
+SYNC_END   := "\x1b[?2026l"
+
+func color(state) {
+    if state == 0 {
+        return RESET
+    }
+    if state == 1 {
+        return GREEN
+    }
+    return RED
+}
+
+func printGrid(grid) {
+    w := len(grid[0])
+    h := len(grid)
+    for y := 0:h:2 {
+        line := ""
+        for x := w {
+            top := grid[y][x]
+            bottom := grid[y+1][x]
+            if top == bottom {
+                if top==0 {
+                    line += color(top) + " "
+                } else {
+                    line += color(top) + FULL
+                }
+            } else if bottom==0 {
+                line += color(top) + TOP
+            } else if top==0 {
+                line += color(bottom) + BOTTOM
+            } else {
+                if top == 2 {
+                    line += RED_BG
+                } else {
+                    line += GREEN_BG
+                }
+                line += color(bottom) + BOTTOM + RESET
+            }
+        }
+        println(line)
+    }
+}
+
+println("Part 1: initial state")
+input := readInput()
+
+printGrid(input)
+
+
+func CountGridNeighbors(grid) {
+    w := len(grid[0])
+    h := len(grid)
+    for y := h {
+        for x := w {
+            n := countNeighbors(grid, x, y)
+            printf("%d", n)
+        }
+        println()
+    }
+}
+
+func Part1Remove(grid) {
+    w := len(grid[0])
+    h := len(grid)
+    sum := 0
+    ngrid := []
+    for y := h {
+        nline := []
+        for x := w {
+            v := grid[y][x]
+            if v == 1 {
+                n := countNeighbors(grid, x, y)
+                if n < 4 {
+                    sum++
+                    v = 2
+                }
+            }
+            nline += v
+        }
+        ngrid += [nline]
+    }
+    return [ngrid, sum]
+}
+
+// CountGridNeighbors(input)
+
+print(HOME+CLEAR)
+ngrid := input
+printGrid(ngrid)
+print("Initial...  ")
+sleep(1)
+p1 := 0
+sum := 0
+for true {
+    res := Part1Remove(ngrid)
+    ngrid = res[0]
+    print(HOME+SYNC_START)
+    printGrid(ngrid)
+    removed := res[1]
+    print(RESET + "Next generation removed:", removed, "  total so far ", sum, "  ")
+    print(SYNC_END)
+    sum += removed
+    if p1 == 0 {
+        p1 = removed
+    }
+    if removed == 0 {
+        break
+    }
+    sleep(0.001*removed)
+}
+
+println("\n1.Part 1:", p1)
+println("2.Total removed:", sum)
