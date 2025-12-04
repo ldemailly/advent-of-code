@@ -24,12 +24,14 @@ func readInput() {
 
 func countNeighbors(grid, x, y) {
     sum := 0
+    w := len(grid[0])
+    h := len(grid)
     for j:= y-1:y+2 {
         for i:= x-1:x+2 {
             if i==x && j==y { //center
                 continue
             }
-            if i<0 || j<0 || j>=len(grid) || i>=len(grid[0]) {
+            if i<0 || j<0 || j>=h || i>=w {
                 continue
             }
             if grid[j][i]==1 {
@@ -95,12 +97,6 @@ func printGrid(grid) {
     }
 }
 
-println("Part 1: initial state")
-input := readInput()
-
-printGrid(input)
-
-
 func CountGridNeighbors(grid) {
     w := len(grid[0])
     h := len(grid)
@@ -113,7 +109,7 @@ func CountGridNeighbors(grid) {
     }
 }
 
-func Part1Remove(grid) {
+func Remove(grid) {
     w := len(grid[0])
     h := len(grid)
     sum := 0
@@ -139,16 +135,18 @@ func Part1Remove(grid) {
 // CountGridNeighbors(input)
 
 print(HOME+CLEAR)
+input := readInput()
 ngrid := input
 printGrid(ngrid)
 print("Initial...  ")
-sleep(1)
+//sleep(1)
 p1 := 0
 sum := 0
 for true {
-    res := Part1Remove(ngrid)
+    res := Remove(ngrid)
     ngrid = res[0]
     print(HOME+SYNC_START)
+    //println()
     printGrid(ngrid)
     removed := res[1]
     print(RESET + "Next generation removed:", removed, "  total so far ", sum, "  ")
@@ -160,7 +158,7 @@ for true {
     if removed == 0 {
         break
     }
-    sleep(0.001*removed)
+    //sleep(0.001*removed)
 }
 
 println("\n1.Part 1:", p1)
