@@ -42,7 +42,7 @@ println("1.Result:", sum)
 func cutByN(str, n) {
     res := []
     l := len(str)
-    for i :=0:l:n {
+    for i := 0:l:n {
         res += str[i:i+n]
     }
     return res
