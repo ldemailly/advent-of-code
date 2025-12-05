@@ -6,9 +6,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"image"
+	"image/color"
 	"os"
 	"strings"
 	"time"
+
+	"fortio.org/terminal/ansipixels"
+	"fortio.org/terminal/ansipixels/tcolor"
 )
 
 func readInput() [][]int {
@@ -52,76 +57,7 @@ func countNeighbors(grid [][]int, x, y int) int {
 	return sum
 }
 
-const (
-	FULL     = "█"
-	TOP      = "▀"
-	BOTTOM   = "▄"
-	GREEN    = "\x1b[32m"
-	GREEN_BG = "\x1b[42m"
-	RED      = "\x1b[31m"
-	RED_BG   = "\x1b[41m"
-	RESET    = "\x1b[0m"
-
-	HOME       = "\x1b[H"
-	CLEAR      = "\x1b[2J"
-	SYNC_START = "\x1b[?2026h"
-	SYNC_END   = "\x1b[?2026l"
-)
-
-func color(state int) string {
-	if state == 0 {
-		return RESET
-	}
-	if state == 1 {
-		return GREEN
-	}
-	return RED
-}
-
-func printGrid(grid [][]int) {
-	w := len(grid[0])
-	h := len(grid)
-	for y := 0; y < h; y += 2 {
-		line := ""
-		for x := range w {
-			top := grid[y][x]
-			bottom := grid[y+1][x]
-			if top == bottom {
-				if top == 0 {
-					line += color(top) + " "
-				} else {
-					line += color(top) + FULL
-				}
-			} else if bottom == 0 {
-				line += color(top) + TOP
-			} else if top == 0 {
-				line += color(bottom) + BOTTOM
-			} else {
-				if top == 2 {
-					line += RED_BG
-				} else {
-					line += GREEN_BG
-				}
-				line += color(bottom) + BOTTOM + RESET
-			}
-		}
-		fmt.Println(line)
-	}
-}
-
-func CountGridNeighbors(grid [][]int) {
-	w := len(grid[0])
-	h := len(grid)
-	for y := range h {
-		for x := range w {
-			n := countNeighbors(grid, x, y)
-			fmt.Printf("%d", n)
-		}
-		fmt.Println()
-	}
-}
-
-func Remove(grid [][]int) ([][]int, int) {
+func Remove(curGen int, grid [][]int) ([][]int, int) {
 	w := len(grid[0])
 	h := len(grid)
 	sum := 0
@@ -134,7 +70,7 @@ func Remove(grid [][]int) ([][]int, int) {
 				n := countNeighbors(grid, x, y)
 				if n < 4 {
 					sum++
-					v = 2
+					v = -curGen
 				}
 			}
 			nline = append(nline, v)
@@ -144,23 +80,50 @@ func Remove(grid [][]int) ([][]int, int) {
 	return ngrid, sum
 }
 
+func GridToImage(curGen int, grid [][]int) *image.RGBA {
+	w := len(grid[0])
+	h := len(grid)
+	background := color.RGBA{R: 0, G: 0, B: 0, A: 0}
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	for y := range h {
+		for x := range w {
+			v := grid[y][x]
+			var c color.RGBA
+			switch v {
+			case 0:
+				c = background
+			case 1:
+				c = color.RGBA{R: 30, G: 170, B: 60, A: 255} // white
+			default:
+				kcol := tcolor.Oklchf(.2-float64(v)/70., 0.8, 0.08)
+				ct, data := kcol.Decode()
+				rgbc := tcolor.ToRGB(ct, data)
+				c = color.RGBA{R: rgbc.R, G: rgbc.G, B: rgbc.B, A: 255}
+			}
+			img.SetRGBA(x, y, c)
+		}
+	}
+	return img
+}
+
 func main() {
-	fmt.Print(HOME + CLEAR)
-	input := readInput()
-	ngrid := input
-	printGrid(ngrid)
+	ngrid := readInput()
+	ap := ansipixels.NewAnsiPixels(0)
+	ap.GetSize()
+	_ = ap.ShowScaledImage(GridToImage(0, ngrid))
 	fmt.Print("Initial...  ")
 	time.Sleep(1 * time.Second)
 	p1 := 0
 	sum := 0
 	var removed int
+	curGen := 1
 	for {
-		ngrid, removed = Remove(ngrid)
-		fmt.Print(HOME + SYNC_START)
-		// fmt.Println()
-		printGrid(ngrid)
-		fmt.Print(RESET+"Next generation removed:", removed, "  total so far ", sum, "  ")
-		fmt.Print(SYNC_END)
+		ngrid, removed = Remove(curGen, ngrid)
+		ap.StartSyncMode()
+		ap.ClearScreen()
+		_ = ap.ShowScaledImage(GridToImage(curGen, ngrid))
+		ap.WriteAt(0, ap.H-4, "Generation %d removed: %d total so far %d   ", curGen, removed, sum)
+		ap.EndSyncMode()
 		sum += removed
 		if p1 == 0 {
 			p1 = removed
@@ -168,6 +131,7 @@ func main() {
 		if removed == 0 {
 			break
 		}
+		curGen++
 		time.Sleep(time.Duration(removed) * time.Millisecond)
 	}
 	fmt.Println("\n1.Part 1:", p1)
