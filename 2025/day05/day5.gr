@@ -1,0 +1,86 @@
+// Day 5 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/5
+
+
+func readInput() {
+    ranges := []
+    ids := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        r := split(line, "-")
+        if len(r) == 2 {
+            start := int(r[0])
+            end := int(r[1])
+            ranges += [[start, end]]
+        } else {
+            id := int(r[0])
+            ids += id
+        }
+    }
+    return [ranges, ids]
+}
+
+func isInRanges(n, ranges) {
+    for r := ranges {
+        if n >= r[0] && n <= r[1] {
+            return true
+        }
+    }
+    return false
+}
+
+println("Part 1:")
+input := readInput()
+println("input:", input)
+
+sum := 0
+intervals := input[0]
+for id := input[1] {
+    if isInRanges(id, intervals) {
+        println("  1.ID", id, "is in a range so fresh!")
+        sum ++
+    } else {
+        println("  1.ID", id, "is NOT in any range")
+    }
+}
+println("1.Result:", sum)
+
+println("Part 2:")
+
+intervals := sort(intervals)
+// println(" Sorted intervals:", intervals)
+
+
+func union(i1, i2) {
+    end1 := i1[1]
+    start2 := i2[0]
+    if end1 < start2 - 1 {
+        return [i1, i2] // no overlap
+    }
+    end := max(end1, i2[1])
+    return [[i1[0], end]]
+}
+
+merged := []
+cur := intervals[0]
+for i := len(intervals)-1 {
+    n:= union(cur, intervals[i+1])
+    if len(n) == 2 {
+        merged += [n[0]]
+        cur = n[1]
+    } else {
+        cur = n[0]
+    }
+}
+merged += [cur]
+// println(" Merged intervals:", merged)
+
+sum := 0
+for id := merged {
+    length := id[1] - id[0] + 1
+    sum += length
+}
+println("2.Result:", sum)
