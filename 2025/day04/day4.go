@@ -93,9 +93,9 @@ func GridToImage(curGen int, grid [][]int) *image.RGBA {
 			case 0:
 				c = background
 			case 1:
-				c = color.RGBA{R: 30, G: 170, B: 60, A: 255} // white
+				c = color.RGBA{R: 200, G: 210, B: 160, A: 255} // white
 			default:
-				kcol := tcolor.Oklchf(.2-float64(v)/70., 0.8, 0.08)
+				kcol := tcolor.Oklchf(.25-float64(v)/70., 0.8, .55)
 				ct, data := kcol.Decode()
 				rgbc := tcolor.ToRGB(ct, data)
 				c = color.RGBA{R: rgbc.R, G: rgbc.G, B: rgbc.B, A: 255}
