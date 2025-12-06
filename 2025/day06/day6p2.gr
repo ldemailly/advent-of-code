@@ -1,0 +1,76 @@
+// Day 6 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/6
+
+// Part2 : spacing and alignment is significant (!)
+func readInput() {
+    matrix := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        r := split(line, "")
+        matrix += [r]
+    }
+    return matrix
+}
+
+func transpose(mat) {
+    rows := len(mat)
+    cols := len(mat[0])
+    res := []
+    for c := cols {
+        rnew := []
+        for r := rows {
+            rnew += mat[r][c]
+        }
+        res += [rnew]
+    }
+    return res
+}
+
+println("Part 2:")
+input := readInput()
+ops1 :=input[-1]
+ops := []
+for op := ops1 {
+    if op == " " {
+        continue
+    }
+    ops += op
+}
+println("ops:", ops)
+tinput := transpose(input[0:-1])
+println("input:", input)
+println("transposed input:", tinput)
+p:= 0
+f := true
+sum := 0
+for row := tinput {
+    v := join(row, "")
+    if trim(v) == "" {
+        println("---new problem---")
+        p++
+        f = true
+        sum += res
+        continue
+    }
+    op := ops[p]
+    vn := int(v)
+    if f {
+        res = vn
+        f = false
+        println(" Problem", p, "row:", row, "as value:", v, "sets initial result to:", res)
+        continue
+    }
+    if op == "+" {
+        res += vn
+    } else if op == "*" {
+        res *= vn
+    } else {
+        println(" Unknown op:", op)
+    }
+    println(" Row:", row, "as value:", v, "with op:", op, "gives result:", res)
+}
+sum += res
+println("2.Result:", sum)
