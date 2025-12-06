@@ -1,0 +1,77 @@
+// Day 6 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/6
+
+
+func readInput() {
+    problems := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        r := split(line, " ")
+        rr := []
+        ops := []
+        for v := r {
+            if v == "" { // extra spaces
+                continue
+            }
+            if v == "*" || v == "+" {
+                ops += v
+                continue
+            }
+            rr += int(v)
+        }
+        if len(ops) == 0 {
+            problems += [rr]
+        }
+    }
+    return [problems, ops]
+}
+
+func mkProblems(problems, ops) {
+    n := len(ops)
+    h := len(problems)
+    res := []
+    for i := n {
+        p := []
+        for j := h {
+            p += problems[j][i]
+        }
+        res += [p]
+    }
+    return res
+}
+
+
+println("Part 1:")
+input := readInput()
+println("input:", input)
+inp := input[0]
+ops := input[1]
+p := mkProblems(inp, ops)
+println("p:", p)
+
+func apply(vals, op) {
+    println(" Applying on vals:", vals, "with op:", op)
+    res := vals[0]
+    for i := 1:len(vals) {
+        println("  Step", i, "res:", res)
+        v := vals[i]
+        if op == "+" {
+            res += v
+        } else if op == "*" {
+            res *= v
+        } else {
+            error("Unknown op:" + op)
+        }
+    }
+    return res
+}
+
+sum := 0
+for i := len(ops) {
+    sum += apply(p[i], ops[i])
+}
+
+println("1.Result:", sum)
