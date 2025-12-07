@@ -50,24 +50,33 @@ func printGrid(grid) {
     }
 }
 
+func copy(row) {
+    nrow := []
+    for v := row {
+        nrow += v
+    }
+    return nrow
+}
+
 func step(row, beams) {
     nbeams := {}
     hit := 0
+    nrow := copy(row)
     for bm := beams {
         b := bm.key
         if row[b] == 2 {
             // splitter
             nbeams[b-1] = true
             nbeams[b+1] = true
-            row[b-1] = 3
-            row[b+1] = 3
+            nrow[b-1] = 3
+            nrow[b+1] = 3
             hit++
         } else {
-            row[b] = 3
+            nrow[b] = 3
             nbeams[b] = true
         }
     }
-    return [nbeams, row, hit]
+    return [nbeams, nrow, hit]
 }
 
 input := readInput()
@@ -79,12 +88,58 @@ printGrid(grid)
 h := len(grid)
 beams := {start: true}
 sum := 0
+ngrid := []
 for y := 1:h-1 {
     res := step(grid[y], beams)
     beams = res[0]
-    grid[y] = res[1]
+    ngrid += [res[1]]
     hit := res[2]
     sum += hit
-    printGrid(grid)
+    println("At row ", y, " splitters hit=", hit, " total so far=", sum)
+    printGrid(ngrid)
 }
 println("Part 1: Total splitters hit:", sum)
+
+
+func step2(row, beams) {
+    nbeams := {}
+    for i := len(row) {
+        nbeams[i+0] = 0 // +0 as workaround for https://github.com/grol-io/grol/issues/467
+    }
+    for bm := beams {
+        b := bm.key
+        v := bm.value
+        if row[b] == 2 {
+            // splitter
+            nbeams[b-1] += v
+            row[b-1] = 3
+            nbeams[b+1] +=v
+            row[b+1] = 3
+        } else {
+            nbeams[b] += v
+            row[b] = 3
+        }
+    }
+    return [nbeams, row]
+}
+
+start := input[0]
+grid := input[1]
+printGrid(grid)
+
+h := len(grid)
+beams := {start: 1}
+for y := 1:h-1 {
+    res := step2(grid[y], beams)
+    beams = res[0]
+    grid[y] = res[1]
+    println("After row ", y, " beams=", beams)
+    printGrid(grid)
+}
+
+println("Part 1: Total splitters hit:", sum)
+paths := 0
+for bm := beams {
+    paths += bm.value
+}
+println("Part 2: Total Paths:", paths)
