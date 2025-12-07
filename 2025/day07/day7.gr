@@ -1,0 +1,90 @@
+// Day 7 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/7
+
+
+
+func readInput() {
+    start := -1
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        row := []
+        i:=0
+        for vs := split(line) {
+            v := 0
+            if (vs == "^") {
+                v = 2 // 2 for splitter
+            } else if (vs == "S") {
+                v = 1 // for start
+                res := [] // in case S is not at the first line
+                start = i
+            }
+            row += v
+            i++
+        }
+        res += [row]
+    }
+    return [start,res]
+}
+
+func printGrid(grid) {
+    w := len(grid[0])
+    h := len(grid)
+    for y := 0:h {
+        line := ""
+        for x := w {
+            v := grid[y][x]
+            if v == 0 {
+                line += " "
+            } else if v == 1 {
+                line += "S"
+            } else if v == 2 {
+                line += "^"
+            } else {
+                line += "|"
+            }
+        }
+        println(line)
+    }
+}
+
+func step(row, beams) {
+    nbeams := {}
+    hit := 0
+    for bm := beams {
+        b := bm.key
+        if row[b] == 2 {
+            // splitter
+            nbeams[b-1] = true
+            nbeams[b+1] = true
+            row[b-1] = 3
+            row[b+1] = 3
+            hit++
+        } else {
+            row[b] = 3
+            nbeams[b] = true
+        }
+    }
+    return [nbeams, row, hit]
+}
+
+input := readInput()
+start := input[0]
+grid := input[1]
+println("Initial...  start at x=", start)
+printGrid(grid)
+
+h := len(grid)
+beams := {start: true}
+sum := 0
+for y := 1:h-1 {
+    res := step(grid[y], beams)
+    beams = res[0]
+    grid[y] = res[1]
+    hit := res[2]
+    sum += hit
+    printGrid(grid)
+}
+println("Part 1: Total splitters hit:", sum)
