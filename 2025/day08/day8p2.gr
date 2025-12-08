@@ -47,12 +47,6 @@ println("Total distances:", len(distances))
 // sort distances
 distances = sort(distances)
 
-// Part 1 sample N:=10 ; part 1 real N:=1000
-N:=10
-
-println("Sorted", N, "distances:", distances[0:N])
-
-
 // Build circuits
 
 pt2circuit := {}
@@ -71,8 +65,8 @@ func merge(c1, c2) {
 }
 
 cnum :=0
-for dval := distances[0:N] {
-    d := dval[0]
+for dval := distances {
+    // d := dval[0]
     i := dval[1]
     j := dval[2]
     if pt2circuit[i] == nil {
@@ -89,23 +83,8 @@ for dval := distances[0:N] {
     }
     pt2circuit[j] = cid
     println("Circuits", circuits)
+    if len(circuits[cid]) == npts {
+        println("Part 2: Result:", i,j, points[i], points[j], points[i][0]*points[j][0])
+        break
+    }
 }
-
-clen := []
-
-for c := circuits {
-    l := len(c.value)
-    clen += l
-}
-clen = sort(clen)
-println("sorted circuits lengths:", clen)
-
-top3 := clen[-3:]
-
-println("Top 3 circuits:", top3)
-
-mul := 1
-for v := top3 {
-    mul *= v
-}
-println("Part 1: Result:", mul)
