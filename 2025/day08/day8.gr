@@ -1,0 +1,110 @@
+// Day 8 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/8
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        parts := split(line, ",")
+        x := int(parts[0])
+        y := int(parts[1])
+        z := int(parts[2])
+        res += [[x, y, z]]
+    }
+    return res
+}
+
+func dist(a, b) {
+    dx := a[0]-b[0]
+    dy := a[1]-b[1]
+    dz := a[2]-b[2]
+    return dx*dx + dy*dy + dz*dz
+}
+
+println("Part 1:")
+points := readInput()
+println("input:", points)
+
+npts := len(points)
+ndist := (npts*(npts-1))/2
+println("Total points:", npts, "=> total distances:", ndist)
+distances = 0:ndist
+count := 0
+for i:=0:npts-1 {
+    p1 := points[i]
+    for j:=i+1:npts {
+        p2 := points[j]
+        d := dist(p1, p2)
+        distances[count]=[d, i, j]
+        count++
+    }
+    println("Point", i, "done.")
+}
+println("Total distances:", len(distances))
+// sort distances
+distances = sort(distances)
+
+N:=1000
+
+println("Sorted", N, "distances:", distances[0:N])
+
+
+// Build circuits
+
+pt2circuit := {}
+circuits := {}
+
+func merge(c1, c2) {
+    if c1 == c2 {
+        return
+    }
+    println("Merging circuits", c1, "and", c2)
+    for pt := circuits[c2] {
+        pt2circuit[pt] = c1
+    }
+    circuits[c1] += circuits[c2]
+    del(circuits[c2])
+}
+
+cnum :=0
+for dval := distances[0:N] {
+    d := dval[0]
+    i := dval[1]
+    j := dval[2]
+    if pt2circuit[i] == nil {
+        println("Creating circuit", cnum, "for point", i)
+        pt2circuit[i] = cnum
+        circuits[cnum] = [i]
+        cnum++
+    }
+    cid := pt2circuit[i]
+    if pt2circuit[j] != nil {
+        merge(cid, pt2circuit[j])
+    } else {
+        circuits[cid] += j
+    }
+    pt2circuit[j] = cid
+    println("Circuits", circuits)
+}
+
+clen := []
+
+for c := circuits {
+    l := len(c.value)
+    clen += l
+}
+clen = sort(clen)
+println("sorted circuits lengths:", clen)
+
+top3 := clen[-3:]
+
+println("Top 3 circuits:", top3)
+
+mul := 1
+for v := top3 {
+    mul *= v
+}
+println("Part 1: Result:", mul)
