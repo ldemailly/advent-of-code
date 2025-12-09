@@ -58,7 +58,27 @@ for pt := points {
 
 printf(`<svg width="%d" height="%d" xmlns="http://www.w3.org/2000/svg">`, w+10, h+10)
 //printf(`<svg xmlns="http://www.w3.org/2000/svg">`)
-printf(`<polygon fill="none" stroke="red" points="%s" />`, svgStr)
+//printf(`<polygon fill="none" stroke="red" points="%s"/>`, svgStr)
+println()
+prev := points[0]
+strokeColor := "blue"
+lineWidth := 3
+for pt := points[1:] {
+    x1 := prev[0]
+    y1 := prev[1]
+    x2 := pt[0]
+    y2 := pt[1]
+    printf(`<line x1="%.2f" y1="%.2f" x2="%.2f" y2="%.2f" stroke="%s" stroke-width="%d" />`, x1, y1, x2, y2, strokeColor, lineWidth)
+    println()
+    prev = pt
+    lineWidth = 1
+    if strokeColor == "red" {
+        strokeColor = "green"
+    } else {
+        strokeColor = "red"
+    }
+}
+
 println("</svg>")
 
 
@@ -83,4 +103,22 @@ println("</svg>")
 .........X.X..
 .........#X#..
 ..............
+
+  01234567
+0 1---2
+1 A-9 3--4
+2 6-|----5
+3 7-8
+
+0,0
+4,0
+4,1
+7,1
+7,2
+0,2
+0,3
+2,3
+2,1
+0,1
+
 */
