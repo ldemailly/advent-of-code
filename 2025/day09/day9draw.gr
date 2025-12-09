@@ -1,0 +1,92 @@
+// Day 9 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/9
+
+minx := 999999999
+miny := 999999999
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        parts := split(line, ",")
+        x := int(parts[0])
+        y := int(parts[1])
+        minx = min(minx, x)
+        miny = min(miny, y)
+        res += [[x, y]]
+    }
+    return res
+}
+
+w :=0
+h :=0
+
+scale :=17
+
+func offsetInput(points) {
+    res := []
+    for p := points {
+        x := (p[0]-minx)/scale
+        y := (p[1]-miny)/scale
+        w = max(w, x)
+        h = max(h, y)
+        res += [[x, y]]
+    }
+    return res
+}
+
+func dist(a, b) {
+    dx := abs(a[0]-b[0])+1
+    dy := abs(a[1]-b[1])+1
+    d := dx*dy
+    return d
+}
+
+points := readInput()
+points = offsetInput(points)
+println("input:", points)
+println("Width:", w, "Height:", h)
+
+img := image.new("poly",w, h)
+pt0 := points[0]
+x := pt0[0]
+y := pt0[1]
+println("Move to:", x, y)
+image.move_to(img, x, y)
+
+for pt := points[1:] {
+    x := pt[0]
+    y := pt[1]
+    println("Line to:", x, y)
+    image.line_to(img, x, y)
+}
+println("Closing path")
+image.close_path(img)
+image.draw(img, [200,200,200])
+image.save(img)
+
+/*
+..............
+.......#...#..
+..............
+..#....#......
+..............
+..#......#....
+..............
+.........#.#..
+..............
+
+
+..............
+.......#XXX#..
+.......X...X..
+..#XXXX#...X..
+..X........X..
+..#XXXXXX#.X..
+.........X.X..
+.........#X#..
+..............
+*/

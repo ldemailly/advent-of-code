@@ -37,13 +37,13 @@ func dist(a, b [3]int) int {
 }
 
 func main() {
-	fmt.Println("Part 1:")
+	// fmt.Println("Part 1:")
 	points := readInput()
-	fmt.Println("input:", points)
+	// fmt.Println("input:", points)
 
 	npts := len(points)
 	ndist := (npts * (npts - 1)) / 2
-	fmt.Println("Total points:", npts, "=> total distances:", ndist)
+	// fmt.Println("Total points:", npts, "=> total distances:", ndist)
 	distances := make([][3]int, ndist) // [distance, point1, point2]
 	count := 0
 	for i := range npts - 1 {
@@ -54,9 +54,9 @@ func main() {
 			distances[count] = [3]int{d, i, j}
 			count++
 		}
-		fmt.Println("Point", i, "done.")
+		// fmt.Println("Point", i, "done.")
 	}
-	fmt.Println("Total distances:", len(distances))
+	// fmt.Println("Total distances:", len(distances))
 	// sort distances
 	slices.SortFunc(distances, func(a, b [3]int) int {
 		if a[0] < b[0] {
@@ -82,7 +82,7 @@ func main() {
 		if c1 == c2 {
 			return
 		}
-		fmt.Println("Merging circuits", c1, "and", c2)
+		// fmt.Println("Merging circuits", c1, "and", c2)
 		for _, pt := range circuits[c2] {
 			pt2circuit[pt] = c1
 		}
@@ -97,7 +97,7 @@ func main() {
 		i := dval[1]
 		j := dval[2]
 		if _, found := pt2circuit[i]; !found {
-			fmt.Println("Creating circuit", cnum, "for point", i)
+			// fmt.Println("Creating circuit", cnum, "for point", i)
 			pt2circuit[i] = cnum
 			circuits[cnum] = []int{i}
 			cnum++
@@ -109,7 +109,7 @@ func main() {
 			circuits[cid] = append(circuits[cid], j)
 		}
 		pt2circuit[j] = cid
-		fmt.Println("Circuits", circuits)
+		// fmt.Println("Circuits", circuits)
 		if len(circuits[cid]) == npts {
 			fmt.Println("Part 2: Result:", i, j, points[i], points[j], points[i][0]*points[j][0])
 			break
