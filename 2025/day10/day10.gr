@@ -1,0 +1,36 @@
+// Day 10 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/10
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        parts := split(line, " ")
+        lights := []
+        for l := parts[0][1:-1] {
+            if l == "#" {
+                lights += 1
+            } else {
+                lights += 0
+            }
+        }
+        btns := []
+        for b := parts[1:-1] {
+            btn := []
+            for i := split(b[1:-1], ",") {
+                btn += int(i)
+            }
+            btns += [btn]
+        }
+        println("Machine lights", lights, "buttons", btns)
+        res += [lights, btns]
+    }
+    return res
+}
+
+println("Part 1:")
+points := readInput()
+println("input:", points)
