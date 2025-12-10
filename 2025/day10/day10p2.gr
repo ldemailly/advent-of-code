@@ -75,7 +75,7 @@ func solve(state, target, buttons) {
             if tooHigh(newState, target) {
                 continue
             }
-            queue += [{"state": newState, "presses": current.presses + 1, "nextIdx": bidx+0}]
+            queue += [{"state": newState, "presses": current.presses + 1, "nextIdx": bidx}]
         }
     }
 }
