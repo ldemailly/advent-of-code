@@ -49,21 +49,23 @@ func press(state, button) {
 }
 
 func solve(state, target, buttons) {
-    queue := [{"state": state, "presses": 0, "buttons": buttons}]
+    queue := [{"state": state, "presses": 0, "nextIdx": 0}]
+    numButtons := len(buttons)
     for len(queue) > 0 {
         current := queue[0]
-        println("Current state:", current.state, "presses:", current.presses, "buttons left:", current.buttons)
+        // println("Current state:", current.state, "presses:", current.presses, "nextIdx:", current.nextIdx)
         queue = queue[1:]  // pop front
         // Found solution - return immediately
         if current.state == target {
             println("Found solution with presses:", current.presses)
             return current.presses
         }
-        // Buttons can only be pressed once each or it noops back if pressed 2x so we remove them
-        for bidx := len(buttons) {
+        // Only consider buttons from nextIdx onwards to avoid duplicate combinations
+        // This ensures we only explore A,B,C and not B,A,C, C,A,B, etc.
+        for bidx := current.nextIdx:numButtons {
             b := buttons[bidx]
-            newState := press([]+current.state, b)
-            queue += [{"state": newState, "presses": current.presses + 1, "buttons": buttons[0:bidx] + buttons[bidx+1:]}]
+            newState := press([]+current.state, b) // make a copy because of grol bug mutating arrays in place, sometimes
+            queue += [{"state": newState, "presses": current.presses + 1, "nextIdx": bidx + 1}]
         }
     }
 }
