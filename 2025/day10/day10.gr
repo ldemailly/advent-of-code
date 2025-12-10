@@ -26,11 +26,60 @@ func readInput() {
             btns += [btn]
         }
         println("Machine lights", lights, "buttons", btns)
-        res += [lights, btns]
+        res += {"l":lights, "b":btns}
     }
     return res
 }
 
 println("Part 1:")
-points := readInput()
-println("input:", points)
+machines := readInput()
+
+for m := machines {
+    println("Machine:", m)
+}
+
+
+func press(state, button) {
+    // log("Pressing button:", button, "on state:", state)
+    for i := button {
+        state[i] = 1 - state[i]
+    }
+    // println("New state:", state)
+    state
+}
+
+func solve(state, target, buttons) {
+    queue := [{"state": state, "presses": 0, "buttons": buttons}]
+    for len(queue) > 0 {
+        current := queue[0]
+        println("Current state:", current.state, "presses:", current.presses, "buttons left:", current.buttons)
+        queue = queue[1:]  // pop front
+        // Found solution - return immediately
+        if current.state == target {
+            println("Found solution with presses:", current.presses)
+            return current.presses
+        }
+        // Buttons can only be pressed once each or it noops back if pressed 2x so we remove them
+        for bidx := len(buttons) {
+            b := buttons[bidx]
+            newState := press([]+current.state, b)
+            queue += [{"state": newState, "presses": current.presses + 1, "buttons": buttons[0:bidx] + buttons[bidx+1:]}]
+        }
+    }
+}
+
+sum := 0
+i:=1
+for m := machines {
+    lights := m.l
+    btns := m.b
+    println("Solving machine", i, "with lights", lights, "and buttons", btns)
+    nlights := len(lights)
+    state := [0]*nlights
+    res = solve(state, lights, btns)
+    println("Machine", i, "result:", res)
+    sum += res
+    i++
+}
+
+println("Part 1: Result:", sum)
