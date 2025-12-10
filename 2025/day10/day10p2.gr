@@ -1,0 +1,94 @@
+// Day 10 part 2 of advent of code 2025 - grol version
+// https://adventofcode.com/2025/day/10
+
+func readInput() {
+    res := []
+    for !eof() {
+        line := read()
+        if line == "" {
+            continue
+        }
+        parts := split(line, " ")
+        // ignore lights
+        btns := []
+        for b := parts[1:-1] {
+            btn := []
+            for i := split(b[1:-1], ",") {
+                btn += int(i)
+            }
+            btns += [btn]
+        }
+        // joltages
+        j := []
+        for i := split(parts[-1][1:-1], ",") {
+            j += int(i)
+        }
+        println("Machine buttons", btns, "joltages", j)
+        res += {"b":btns, "j":j}
+    }
+    return res
+}
+
+println("Part 2:")
+machines := readInput()
+
+for m := machines {
+    println("Machine:", m)
+}
+
+
+func press(state, button) {
+    // log("Pressing button:", button, "on state:", state)
+    for i := button {
+        state[i] += 1
+    }
+    // println("New state:", state)
+    state
+}
+
+func tooHigh(state, target) {
+    for i:=0:len(state) {
+        if state[i] > target[i] {
+            return true
+        }
+    }
+    return false
+}
+
+func solve(state, target, buttons) {
+    queue := [{"state": state, "presses": 0, "nextIdx": 0}]
+    numButtons := len(buttons)
+    for len(queue) > 0 {
+        current := queue[0]
+        // log("Current state:", current.state, "presses:", current.presses)
+        queue = queue[1:]  // pop front
+        // Found solution - return immediately
+        if current.state == target {
+            println("Found solution with presses:", current.presses)
+            return current.presses
+        }
+        for b := buttons {
+            newState := press([]+current.state, b) // make a copy because of grol bug mutating arrays in place, sometimes
+            if tooHigh(newState, target) {
+                continue
+            }
+            queue += [{"state": newState, "presses": current.presses + 1}]
+        }
+    }
+}
+
+sum := 0
+i:=1
+for m := machines {
+    btns := m.b
+    j := m.j
+    println("Solving machine", i, "with joltages", j, "and buttons", btns)
+    numState := len(j)
+    state := [0]*numState
+    res = solve(state, j, btns)
+    println("Machine", i, "result:", res)
+    sum += res
+    i++
+}
+
+println("Part 1: Result:", sum)
