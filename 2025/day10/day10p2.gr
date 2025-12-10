@@ -60,19 +60,22 @@ func solve(state, target, buttons) {
     numButtons := len(buttons)
     for len(queue) > 0 {
         current := queue[0]
-        // log("Current state:", current.state, "presses:", current.presses)
+        //log("Current state:", current)
         queue = queue[1:]  // pop front
         // Found solution - return immediately
         if current.state == target {
             println("Found solution with presses:", current.presses)
             return current.presses
         }
-        for b := buttons {
+        // Only try buttons from nextIdx onwards to avoid exploring symmetrical permutations
+        for bidx := current.nextIdx : numButtons {
+            b := buttons[bidx]
             newState := press([]+current.state, b) // make a copy because of grol bug mutating arrays in place, sometimes
+            // log("After pressing button", b, "new state:", newState)
             if tooHigh(newState, target) {
                 continue
             }
-            queue += [{"state": newState, "presses": current.presses + 1}]
+            queue += [{"state": newState, "presses": current.presses + 1, "nextIdx": bidx+0}]
         }
     }
 }
