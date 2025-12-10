@@ -25,12 +25,15 @@ w :=0
 h :=0
 
 scale := 100.
+minx = 0
+miny = 0
+offset := 0
 
 func offsetInput(points) {
     res := []
     for p := points {
-        x := 10+(p[0]-minx)/scale
-        y := 10+(p[1]-miny)/scale
+        x := offset+(p[0]-minx)/scale
+        y := offset+(p[1]-miny)/scale
         w = max(w, int(ceil(x)))
         h = max(h, int(ceil(y)))
         res += [[x, y]]
@@ -56,7 +59,7 @@ for pt := points {
     svgStr += sprintf("%.2f,%.2f ", x, y)
 }
 
-printf(`<svg width="%d" height="%d" xmlns="http://www.w3.org/2000/svg">`, w+10, h+10)
+printf(`<svg width="%d" height="%d" xmlns="http://www.w3.org/2000/svg">`, w+offset, h+offset)
 //printf(`<svg xmlns="http://www.w3.org/2000/svg">`)
 //printf(`<polygon fill="none" stroke="red" points="%s"/>`, svgStr)
 println()

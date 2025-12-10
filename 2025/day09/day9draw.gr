@@ -24,15 +24,15 @@ func readInput() {
 w :=0
 h :=0
 
-scale :=17
+scale :=17.3
 
 func offsetInput(points) {
     res := []
     for p := points {
         x := (p[0]-minx)/scale
         y := (p[1]-miny)/scale
-        w = max(w, x)
-        h = max(h, y)
+        w = max(w, int(ceil(x)))
+        h = max(h, int(ceil(y)))
         res += [[x, y]]
     }
     return res
